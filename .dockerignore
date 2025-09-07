@@ -1,0 +1,36 @@
+# Ignore Synology @eaDir everywhere
+**/@eaDir
+@eaDir
+
+# Node/Turbopack artifacts
+node_modules
+.next
+.npm
+.yarn
+.yarnrc*
+
+# VCS/Meta
+.git
+.gitignore
+
+# Logs, caches
+*.log
+logs
+tmp
+.cache
+coverage
+
+# Env files
+.env
+.env.*
+
+# Docker-related
+Dockerfile
+Dockerfile.*
+docker-compose.yml
+docker-compose.*.yml
+
+# Misc
+.DS_Store
+README.md
+

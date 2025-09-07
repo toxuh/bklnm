@@ -1,0 +1,54 @@
+version: "3.9"
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_SITE_URL: "https://bklnm.band"
+    image: bklnm:latest
+    container_name: bklnm
+    restart: unless-stopped
+    environment:
+      NODE_ENV: "production"
+      PORT: "3000"
+      HOSTNAME: "0.0.0.0"
+      NEXT_PUBLIC_SITE_URL: "https://bklnm.band"
+      NEXT_TELEMETRY_DISABLED: "1"
+    expose:
+      - "3000"
+    networks:
+      - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=web"
+
+      # HTTPS router (Let's Encrypt via existing traefik project)
+      - "traefik.http.routers.bklnm.rule=Host(`bklnm.band`)"
+      - "traefik.http.routers.bklnm.entrypoints=websecure"
+      - "traefik.http.routers.bklnm.tls=true"
+      - "traefik.http.routers.bklnm.tls.certresolver=letsencrypt"
+
+      # Service/port mapping
+      - "traefik.http.routers.bklnm.service=bklnm"
+      - "traefik.http.services.bklnm.loadbalancer.server.port=3000"
+
+      # HTTP -> HTTPS redirect
+      - "traefik.http.routers.bklnm-http.rule=Host(`bklnm.band`)"
+      - "traefik.http.routers.bklnm-http.entrypoints=web"
+      - "traefik.http.routers.bklnm-http.middlewares=bklnm-redirect@docker"
+      - "traefik.http.middlewares.bklnm-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.bklnm-redirect.redirectscheme.permanent=true"
+
+      # Basic security headers
+      - "traefik.http.middlewares.secure-headers.headers.frameDeny=true"
+      - "traefik.http.middlewares.secure-headers.headers.contentTypeNosniff=true"
+      - "traefik.http.middlewares.secure-headers.headers.stsSeconds=31536000"
+      - "traefik.http.middlewares.secure-headers.headers.stsIncludeSubdomains=true"
+      - "traefik.http.routers.bklnm.middlewares=secure-headers@docker"
+
+networks:
+  web:
+    external: true
+
