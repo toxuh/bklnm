@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useMedia } from "react-use";
 import HeroSection from "../components/sections/hero-section";
+import AlbumSection from "../components/sections/album-section";
 // import SocialSection from "../components/sections/social-section";
 import MouseEffects from "../components/ui/mouse-effects";
 import BackgroundEffects from "../components/ui/background-effects";
@@ -71,6 +72,9 @@ export default function Home() {
 
       {/* Main Content */}
       <HeroSection className="relative z-10" />
+
+      {/* Album Release Section */}
+      <AlbumSection className="relative z-10" />
 
       {/* Social Section - Temporarily hidden */}
       {/* <SocialSection className="relative z-10" /> */}
