@@ -1,5 +1,5 @@
 # Simple single-stage Dockerfile for Next.js 15 on Synology (Node 22 Alpine)
-# Uses Yarn (via corepack) and works with Traefik routing through Compose
+# Uses npm and works with Traefik routing through Compose
 
 FROM node:22-alpine
 
@@ -13,12 +13,11 @@ ENV NODE_ENV=production \
 # Needed by some native deps, and to keep images small and stable
 RUN apk add --no-cache libc6-compat
 
-# Enable Yarn via Corepack (respects package.json "packageManager")
-RUN corepack enable
+# npm is bundled with Node image
 
 # Install deps first (better cache)
-COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
+COPY package.json package-lock.json ./
+RUN npm ci
 
 # Copy the rest of the project
 COPY . .
@@ -31,7 +30,7 @@ ARG NEXT_PUBLIC_SITE_URL
 ENV NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
 
 # Build the Next.js app
-RUN yarn build
+RUN npm run build
 
 # Drop privileges for runtime
 RUN addgroup -S app && adduser -S -G app app
@@ -42,5 +41,5 @@ EXPOSE 3000
 ENV PORT=3000 HOSTNAME=0.0.0.0
 
 # Start the production server
-CMD ["yarn", "start"]
+CMD ["npm", "run", "start"]
 
